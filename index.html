@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <meta name="referrer" content="no-referrer">
+  <title>Hamdan Tour Check</title>
+  <meta name="theme-color" content="#0b6735">
+  <link rel="icon" type="image/png" href="assets/logo.png">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-lock" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M6 11V8a6 6 0 0 1 12 0v3M5 11h14v10H5z"/></symbol>
+  <symbol id="i-sheet" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M6 3h8l4 4v14H6zM14 3v4h4M9 12h6M9 16h6"/></symbol>
+  <symbol id="i-reset" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M4 12a8 8 0 1 0 3-6.2M4 4v4h4"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M9 9h11v11H9zM5 15V4h11"/></symbol>
+  <symbol id="i-history" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M3 12a9 9 0 1 0 3-6.7M3 4v5h5M12 7v5l3 2"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+</svg>
+
+<header class="top">
+  <div class="top-in">
+    <img class="logo" src="assets/logo-wide.png" alt="Hamdan Tour" width="97" height="52">
+    <h1>Hamdan Tour Check</h1>
+    <span class="lock"><svg width="16" height="16"><use href="#i-lock"/></svg>File tidak disimpan</span>
+  </div>
+</header>
+
+<nav class="dock" id="dock" aria-label="Langkah">
+  <a href="#s1" data-step="1"><b>1</b><span>Keberangkatan</span></a>
+  <a href="#s2" data-step="2"><b>2</b><span>Upload</span></a>
+  <a href="#s3" data-step="3"><b>3</b><span>Rekonsiliasi</span></a>
+  <a href="#s4" data-step="4"><b>4</b><span>Control panel</span></a>
+  <a href="#s5" data-step="5"><b>5</b><span>Output</span></a>
+  <button type="button" id="btnReset" class="dock-reset" aria-label="Mulai ulang"><b><svg width="18" height="18"><use href="#i-reset"/></svg></b><span>Mulai ulang</span></button>
+</nav>
+
+<main class="wrap">
+
+  <section id="s1" class="sec">
+    <h2><i>1</i>Keberangkatan</h2>
+    <div class="fields">
+      <label class="field">
+        <span>Kode KPU</span>
+        <input id="kpu" type="text" autocomplete="off" maxlength="40">
+        <small class="err" id="kpuErr" hidden>Wajib diisi</small>
+      </label>
+      <label class="field">
+        <span>Nama keberangkatan</span>
+        <input id="dep" type="text" autocomplete="off" maxlength="90">
+        <small class="err" id="depErr" hidden>Wajib diisi</small>
+      </label>
+    </div>
+  </section>
+
+  <section id="s2" class="sec">
+    <h2><i>2</i>Upload</h2>
+    <div class="drops">
+      <div class="drop" id="dropManifest">
+        <input type="file" id="fileManifest" accept=".xlsx,.xls,.csv" aria-label="Pilih file Manifest">
+        <svg class="ico" width="34" height="34"><use href="#i-sheet"/></svg>
+        <div class="dt">Manifest</div>
+        <div class="ds" id="stateManifest">Tarik file atau klik</div>
+      </div>
+      <div class="drop" id="dropMutamer">
+        <input type="file" id="fileMutamer" accept=".xlsx,.xls,.csv" aria-label="Pilih file Mutamer List">
+        <svg class="ico" width="34" height="34"><use href="#i-sheet"/></svg>
+        <div class="dt">Mutamer List</div>
+        <div class="ds" id="stateMutamer">Tarik file atau klik</div>
+      </div>
+    </div>
+    <div class="drop drop-wide" id="dropReport">
+      <input type="file" id="fileReport" accept=".xlsx" aria-label="Buka laporan Excel lama">
+      <svg class="ico" width="30" height="30"><use href="#i-history"/></svg>
+      <div class="wide-txt">
+        <div class="dt">Buka laporan lama</div>
+        <div class="ds" id="stateReport">Excel hasil unduhan dari sini</div>
+      </div>
+    </div>
+    <p class="msg err" id="uploadErr" role="alert" hidden></p>
+  </section>
+
+  <section id="s3" class="sec idle">
+    <h2><i>3</i>Rekonsiliasi</h2>
+    <p class="wait" id="reconEmpty">Menunggu file</p>
+    <div id="reconBody" hidden><div class="checks" id="checks"></div></div>
+  </section>
+
+  <section id="s4" class="sec idle">
+    <h2><i>4</i>Control panel</h2>
+    <p class="wait" id="cpEmpty">Menunggu file</p>
+    <div id="cpBody" hidden>
+      <p class="imp" id="impNote" hidden></p>
+      <div class="band" id="band"></div>
+      <div class="toolbar">
+        <input id="search" type="search" placeholder="Cari nama, paspor, visa" aria-label="Cari">
+        <span class="count" id="rowCount"></span>
+      </div>
+      <div class="table-wrap">
+        <table id="grid">
+          <thead>
+            <tr>
+              <th class="c-sel"><input type="checkbox" id="selAll" aria-label="Pilih semua baris yang tampil"><span>Pilih</span></th>
+              <th class="c-act">Action need</th>
+              <th>No</th>
+              <th>Nama</th>
+              <th>Paspor</th>
+              <th class="c-ico">Passport match</th>
+              <th class="c-ico">Name match</th>
+              <th>Visa number</th>
+              <th>Status visa</th>
+              <th>Kategori</th>
+              <th>Catatan</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+      <button type="button" id="more" class="btn ghost" hidden></button>
+    </div>
+  </section>
+
+  <section id="s5" class="sec idle">
+    <h2><i>5</i>Output</h2>
+    <p class="wait" id="outEmpty">Menunggu file</p>
+    <div id="outBody" hidden>
+      <div class="outs">
+        <button type="button" class="out" id="outDetail"><em>XLSX</em><strong>Excel detail</strong><span>Semua jamaah</span></button>
+        <button type="button" class="out" id="outProblem"><em>XLSX</em><strong>Excel bermasalah</strong><span>Hanya baris bermasalah</span></button>
+        <button type="button" class="out" id="outPdf"><em>PDF</em><strong>PDF report</strong><span>Ringkasan dan tabel</span></button>
+      </div>
+      <p class="stampline">Cap waktu cetak <time id="liveStamp"></time></p>
+      <p class="msg err" id="outErr" role="alert" hidden></p>
+      <p class="msg warn" id="noteWarn" hidden>Catatan Action need hilang jika halaman ditutup sebelum diunduh.</p>
+    </div>
+  </section>
+
+</main>
+
+<aside class="sel" id="sel" hidden aria-live="polite">
+  <div class="sel-head">
+    <strong id="selCount"></strong>
+    <button type="button" class="sel-link" id="selToggle" aria-expanded="true">Sembunyikan</button>
+    <button type="button" class="sel-link" id="selClear">Kosongkan</button>
+    <button type="button" class="btn copy" id="selCopy"><svg width="18" height="18"><use href="#i-copy"/></svg><span>Salin ke WhatsApp</span></button>
+  </div>
+  <div class="sel-body" id="selBody"><div class="bubble" id="bubble"></div></div>
+</aside>
+
+<footer class="foot">Hamdan Tour Check</footer>
+
+<script src="js/logo.js"></script>
+<script src="vendor/xlsx.full.min.js"></script>
+<script src="vendor/exceljs.min.js"></script>
+<script src="vendor/jspdf.umd.min.js"></script>
+<script src="vendor/jspdf.plugin.autotable.min.js"></script>
+<script src="js/core.js"></script>
+<script src="js/export.js"></script>
+<script src="js/import.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
