@@ -17,6 +17,9 @@ if errorlevel 1 goto nogit
 
 if not exist ".git" git init -b main
 
+if exist ".git\rebase-merge" git rebase --abort
+if exist ".git\rebase-apply" git rebase --abort
+
 set "GUN="
 for /f "delims=" %%i in ('git config user.name') do set "GUN=%%i"
 if not defined GUN git config user.name "Hamdan Tour"
@@ -38,9 +41,9 @@ git push -u origin main
 if not errorlevel 1 goto pushed
 
 echo.
-echo Push ditolak. Mencoba menggabungkan perubahan dari GitHub...
-git pull origin main --rebase --allow-unrelated-histories
-git push -u origin main
+echo Riwayat di GitHub berbeda dari folder ini.
+echo Isi GitHub ditimpa dengan isi folder ini...
+git push -u origin main --force
 if errorlevel 1 goto failed
 
 :pushed
